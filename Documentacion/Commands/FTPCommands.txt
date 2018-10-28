@@ -1,0 +1,32 @@
+Innitial FTP list of commands
+
++-------------------------------------------------------------+
+|                       List of commands                      |
++-------------------------------------------------------------+
+| FTP command | Description of the command                    |
++-------------+-----------------------------------------------+
+| ls          | Lists the content of the directory            |
++-------------+-----------------------------------------------+
+| disconnect  | terminate ftp session                         |
++-------------+-----------------------------------------------+
+| exit        | terminate ftp sessions and exit               |
++-------------+-----------------------------------------------+
+| get         | receive file                                  |
++-------------+-----------------------------------------------+
+| help        | display local help information                |
++-------------+-----------------------------------------------+
+| mkdir       | make directory on remote machine              |
++-------------+-----------------------------------------------+
+| open        | connect to remote ftp                         |
++-------------+-----------------------------------------------+
+| rename      | rename file                                   |
++-------------+-----------------------------------------------+
+| user        | send new user information                     |
++-------------+-----------------------------------------------+
+| mget        | Copy multiple files from the remote directory |
++-------------+-----------------------------------------------+
+
+Sources:
+https://www.tablesgenerator.com,
+https://www.cs.colostate.edu/helpdocs/ftp.html,
+https://www.serv-u.com/features/file-transfer-protocol-server-linux/commands
