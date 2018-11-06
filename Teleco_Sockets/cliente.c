@@ -29,7 +29,36 @@ void xfer_data(int srcfd, int tgtfd)
     }
 }
 
+void commandMenu(char) {
+    switch ( command )
+    {
+        case (strcmp ("-help", command):
 
+                            break;
+        case (strcmp ("-ls", command):
+
+                            break;
+        case (strcmp ("-disconnect", command):
+
+                            break;
+        case (strcmp ("-exit", command):
+
+                            break;
+        case (strcmp ("-connect", command):
+
+                            break;
+        case (strcmp ("-user", command):
+
+                            break;
+        case (strcmp ("-get", command):
+
+                            break;
+        case (strcmp ("-send", command):
+
+                            break;
+        default : printf("Command not found");
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -43,8 +72,8 @@ int main(int argc, char *argv[])
 	puts("ERROR: cliente <direccion IP>");
 	exit(EXIT_FAILURE);
     }
-    
-    /* Creacion del socket */    
+
+    /* Creacion del socket */
     if((sockfd = socket(PF_INET, SOCK_STREAM, 0)) < 0)
 	err_quit("socket");
 
@@ -63,6 +92,15 @@ int main(int argc, char *argv[])
     puts("conectado al servidor");
     printf("\t Puerto: %d\n",ntohs(cli.sin_port));
     printf("\tDirección: %s\n",inet_ntoa(cli.sin_addr));
+
+
+    /*LECTURA DE COMANDOS*/
+    char command[20];
+    printf("Ingrese el comando");
+    scanf("%s", command); // comando capturado
+    commandMenu(command) // se llama la funcion que decide que comando ejecutar
+
+
 
     /* Copiar la stdin al descriptor de socket*/
     xfer_data(fileno(stdin), sockfd);
