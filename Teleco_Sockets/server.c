@@ -17,18 +17,30 @@ void err_quit(char *msg)
 
 void xfer_data(int srcfd, int tgtfd)
 {
-    char buf[1024];
+	fflush;
+    char *command;
+    command = malloc(11*sizeof(char));
     int cnt, len;
-
+	char mn[] = "hoa";
     /* Leer de la entrada fd y escribir en la salida fd*/
-    while((cnt = read(srcfd, buf, sizeof(buf))) > 0)
+    while((cnt = read(srcfd, command, sizeof(command))) > 0)
     {
+	if (strcmp(command,mn)== 0){
+		printf("el if funciona");
+	}
+	printf("%s \n",command); 
+	/*
 	if(len < 0)
 	    err_quit("xfer_data:read");
-	if((len = write(tgtfd, buf, cnt)) != cnt)
+	if((len = write(tgtfd, command, cnt)) != cnt){
 	    err_quit("xfer_data:write");
+	    printf("hola111: %d",len);
+	    }
+	 if ((strcmp(buf, "hola") == 0)){
+		printf("respuesta");
+		printf("%s",buf);
+		}*/
     }
-
 }
 
 
@@ -68,7 +80,6 @@ int main(void)
 
     /*Leer desde el socket y escribe en stdout*/
     xfer_data(infd, fileno(stdout));
-
-
+    
     exit(EXIT_SUCCESS);
 }

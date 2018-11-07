@@ -29,35 +29,44 @@ void xfer_data(int srcfd, int tgtfd)
     }
 }
 
-void commandMenu(char) {
-    switch ( command )
-    {
-        case (strcmp ("-help", command):
-
-                            break;
-        case (strcmp ("-ls", command):
-
-                            break;
-        case (strcmp ("-disconnect", command):
-
-                            break;
-        case (strcmp ("-exit", command):
-
-                            break;
-        case (strcmp ("-connect", command):
-
-                            break;
-        case (strcmp ("-user", command):
-
-                            break;
-        case (strcmp ("-get", command):
-
-                            break;
-        case (strcmp ("-send", command):
-
-                            break;
-        default : printf("Command not found");
-    }
+void commandMenu(char *command) {
+	int band=0;
+	
+	if (strcmp ("-help", command)==0){
+		printf("GG1");
+		band=1;
+	}
+	else if (strcmp (command,"-ls")==0){
+		printf("GG2");
+		band=1;
+	}
+	else if (strcmp ("-disconnect", command)==0){
+		printf("GG3");
+		band=1;
+	}
+	else if (strcmp ("-exit", command)==0){
+		printf("GG4");
+		band=1;
+	}
+	else if (strcmp ("-connect", command)==0){
+		printf("GG5");
+		band=1;
+	}
+	else if (strcmp ("-user", command)==0){
+		printf("GG6");
+		band=1;
+	}
+	else if (strcmp ("-get", command)==0){
+		printf("GG7");
+		band=1;
+	}
+	else if (strcmp ("-send", command)==0){
+		printf("GG8");
+		band=1;
+	}
+	else if(band == 0){
+		printf("Command not found");
+	}
 }
 
 int main(int argc, char *argv[])
@@ -95,16 +104,18 @@ int main(int argc, char *argv[])
 
 
     /*LECTURA DE COMANDOS*/
-    char command[20];
-    printf("Ingrese el comando");
+    char command[60];
+    printf("Ingrese el comando: ");
     scanf("%s", command); // comando capturado
-    commandMenu(command) // se llama la funcion que decide que comando ejecutar
+    printf("%s", command);
+    
+    commandMenu(command); // se llama la funcion que decide que comando ejecutar
 
 
 
     /* Copiar la stdin al descriptor de socket*/
-    xfer_data(fileno(stdin), sockfd);
+    //xfer_data(fileno(stdin), sockfd);
 
-    exit(EXIT_SUCCESS);
+    //exit(EXIT_SUCCESS);
 
 }
