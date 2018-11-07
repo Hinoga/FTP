@@ -29,11 +29,38 @@ void xfer_data(int srcfd, int tgtfd)
     }
 }
 
-void commandMenu(char *command) {
+/*
+Developer: Hinoga
+Description: Funcion que arroja al usuario las posibles opciones
+Parameter: none
+Return: void
+Date: 07/11/2018
+*/
+void commandHelp()
+{
+    printf("-help, -h, #Display local help information")
+    printf("-ls,#Lists the content of the directory");
+    printf("-user -Required [ Username ] [ Password ],#Send new user information, #Required Your username, Your password");
+    printf("-get -Required [ File ],#Receive file, #Required File that want to get");
+    printf("-connect #Connect to remote FTP");
+    printf("-disconnect,#Terminate FTP session ");
+    printf("-exit,#Terminate FTP sessions and exit  ");
+}
+
+
+/*
+Developer: DanielToro05 - Hinoga
+Description: Menu para ejecutar el comando propuesto
+Parameter: command
+Return: void
+Date: 06/11/2018
+*/
+void commandMenu(char *command)
+{
 	int band=0;
-	
+
 	if (strcmp ("-help", command)==0){
-		printf("GG1");
+		commandHelp();
 		band=1;
 	}
 	else if (strcmp (command,"-ls")==0){
@@ -108,14 +135,12 @@ int main(int argc, char *argv[])
     printf("Ingrese el comando: ");
     scanf("%s", command); // comando capturado
     printf("%s", command);
-    
+
     commandMenu(command); // se llama la funcion que decide que comando ejecutar
 
-
-
     /* Copiar la stdin al descriptor de socket*/
-    //xfer_data(fileno(stdin), sockfd);
+    xfer_data(fileno(stdin), sockfd);
 
-    //exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 
 }
