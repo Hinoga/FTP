@@ -55,7 +55,7 @@ Date: 07/11/2018
 */
 void readCommand(){
 	char command[60];
-	printf("Ingrese el comando: "); //Display Hello in red   
+	printf("Ingrese el comando: ");
     scanf("%s", command); // comando capturado      
     commandMenu(command); // se llama la funcion que decide que comando ejecutar
 }
@@ -149,8 +149,8 @@ int main(int argc, char *argv[])
 
 
     /* Copiar la stdin al descriptor de socket*/
-    //xfer_data(fileno(stdin), sockfd);
+    xfer_data(fileno(stdin), sockfd);
 
-    //exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 
 }
