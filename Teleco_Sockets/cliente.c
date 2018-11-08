@@ -28,12 +28,50 @@ void xfer_data(int srcfd, int tgtfd)
 	    err_quit("xfer_data:write");
     }
 }
+/*
+Developer: Hinoga
+Description: Funcion que arroja al usuario las posibles opciones
+Parameter: none
+Return: void
+Date: 07/11/2018
+*/
+void commandHelp(){
+	printf("-help, -h, #Display local help information \n");
+    printf("-ls, #Lists the content of the directory \n");
+    printf("-user, -Required [ Username ] [ Password ],#Send new user information, #Required Your username, Your password \n");
+    printf("-get, #Receive file, #Required File that want to get \n");
+    printf("-connect, #Connect to remote FTP\n");
+    printf("-disconnect #Terminate FTP session \n");
+    printf("-exit,#Terminate FTP sessions and exit  \n");	
+    readCommand();
+}
 
+/*
+Developer: DanielToro05 - Hinoga
+Description: Funcion para pedir el comando al usuario
+Parameter: none
+Return: void
+Date: 07/11/2018
+*/
+void readCommand(){
+	char command[60];
+	printf("Ingrese el comando: "); //Display Hello in red   
+    scanf("%s", command); // comando capturado      
+    commandMenu(command); // se llama la funcion que decide que comando ejecutar
+}
+
+/*
+Developer: DanielToro05 - Hinoga
+Description: Menu para ejecutar el comando propuesto
+Parameter: command
+Return: void
+Date: 07/11/2018
+*/
 void commandMenu(char *command) {
 	int band=0;
 	
-	if (strcmp ("-help", command)==0){
-		printf("GG1");
+	if ((strcmp ("-help", command)==0) || (strcmp ("-h", command)==0)){
+		commandHelp();
 		band=1;
 	}
 	else if (strcmp (command,"-ls")==0){
@@ -65,7 +103,8 @@ void commandMenu(char *command) {
 		band=1;
 	}
 	else if(band == 0){
-		printf("Command not found");
+		printf("Command not found\n");
+		readCommand();
 	}
 }
 
@@ -104,12 +143,8 @@ int main(int argc, char *argv[])
 
 
     /*LECTURA DE COMANDOS*/
-    char command[60];
-    printf("Ingrese el comando: ");
-    scanf("%s", command); // comando capturado
-    printf("%s", command);
+    readCommand(); // Pide al usuario un comando a ingresar
     
-    commandMenu(command); // se llama la funcion que decide que comando ejecutar
 
 
 
