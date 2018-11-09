@@ -61,6 +61,25 @@ void readCommand(){
 }
 
 /*
+Developer: Hinoga
+Description: Funcion que arroja al usuario las posibles opciones
+Parameter: none
+Return: void
+Date: 07/11/2018
+*/
+void commandHelp()
+{
+    printf("-help, -h, #Display local help information");
+    printf("-ls,#Lists the content of the directory");
+    printf("-user -Required [ Username ] [ Password ],#Send new user information, #Required Your username, Your password");
+    printf("-get -Required [ File ],#Receive file, #Required File that want to get");
+    printf("-connect #Connect to remote FTP");
+    printf("-disconnect,#Terminate FTP session ");
+    printf("-exit,#Terminate FTP sessions and exit  ");
+}
+
+
+/*
 Developer: DanielToro05 - Hinoga
 Description: Menu para ejecutar el comando propuesto
 Parameter: command
@@ -144,9 +163,6 @@ int main(int argc, char *argv[])
 
     /*LECTURA DE COMANDOS*/
     readCommand(); // Pide al usuario un comando a ingresar
-    
-
-
 
     /* Copiar la stdin al descriptor de socket*/
     xfer_data(fileno(stdin), sockfd);
