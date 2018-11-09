@@ -60,25 +60,53 @@ void readCommand(){
     commandMenu(command); // se llama la funcion que decide que comando ejecutar
 }
 
-/*
-Developer: Hinoga
-Description: Funcion que arroja al usuario las posibles opciones
-Parameter: none
-Return: void
-Date: 07/11/2018
+/*void commandDisconnect(){
+	int val=1;
+	close(sockfd);
+	printf("CHAO");
+		return val;
+}
 */
-void commandHelp()
-{
-    printf("-help, -h, #Display local help information");
-    printf("-ls,#Lists the content of the directory");
-    printf("-user -Required [ Username ] [ Password ],#Send new user information, #Required Your username, Your password");
-    printf("-get -Required [ File ],#Receive file, #Required File that want to get");
-    printf("-connect #Connect to remote FTP");
-    printf("-disconnect,#Terminate FTP session ");
-    printf("-exit,#Terminate FTP sessions and exit  ");
+void commandExit(){
+	int val=0;
+	//commandDisconnect(val);
+	//if(val==1){
+	printf("CHAO-bambino");
+		exit(EXIT_SUCCESS);
 }
 
+/*
+Developer: Danieltoro05 - Paulaamaya0121
+Description: Funcion que autentica el usuario
+Parameter: none
+Return: void
+Date: 09/11/2018
+*/
 
+void commandUser()
+{
+	char user [10] = "daniel"; // Se predefine un usuario
+	char password [5] = "1234";// Se predefine una contraseña
+	printf("Type user: "); 
+	char usuario[10]; // Se declara el arreglo para almacenar el usuario
+	scanf("%s",& usuario);
+	if(strcmp(usuario,user)==0){ // Se compara el usuario ingresado con el usuario predefinido
+		printf("Please type the password: "); 
+		char contrasena[10]; // Se declara el arreglo para almacenar la contraseña
+		scanf("%s",& contrasena); // Si el usuario es correcto, pide la contraseña
+		if(strcmp(contrasena,password)==0){ // Se compara la contraseña con la contraseña predefinida
+			printf("User connected %s\n",user);
+		}
+		else {
+			printf("Incorrect Password\n"); 
+			commandUser(); // Si la contraseña no es correcta se llama la función nuevamente para leer el usuario
+		}
+	}
+	else{
+	printf("Incorrect User\n");
+	commandUser(); // Si el usuario no es correcto se llama la función nuevamente para leer el usuario
+	}
+}
 /*
 Developer: DanielToro05 - Hinoga
 Description: Menu para ejecutar el comando propuesto
@@ -98,11 +126,11 @@ void commandMenu(char *command) {
 		band=1;
 	}
 	else if (strcmp ("-disconnect", command)==0){
-		printf("GG3");
+		//commandDisconnect();
 		band=1;
 	}
 	else if (strcmp ("-exit", command)==0){
-		printf("GG4");
+		commandExit();
 		band=1;
 	}
 	else if (strcmp ("-connect", command)==0){
@@ -110,7 +138,7 @@ void commandMenu(char *command) {
 		band=1;
 	}
 	else if (strcmp ("-user", command)==0){
-		printf("GG6");
+		commandUser();
 		band=1;
 	}
 	else if (strcmp ("-get", command)==0){
@@ -165,8 +193,8 @@ int main(int argc, char *argv[])
     readCommand(); // Pide al usuario un comando a ingresar
 
     /* Copiar la stdin al descriptor de socket*/
-    xfer_data(fileno(stdin), sockfd);
+    //xfer_data(fileno(stdin), sockfd);
 
-    exit(EXIT_SUCCESS);
+    //exit(EXIT_SUCCESS);
 
 }
