@@ -1,12 +1,3 @@
-/*
-* Author: Pablo Camarillo Ramírez.
-* Fecha/Date: 28 de Septiembre de 2010/September 28th 2010.
-* Redes de Computadora / Computer networks.
-* Description: 	This application contains the server functionality
-* 		to send/receive files through C-like sockets by using
-*		TCP/UDP packages.
-*/
- 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -134,26 +125,36 @@ void recibirArchivo(int SocketFD, FILE *file){
 
 	/*Se abre el archivo para escritura*/
 	file = fopen("archivoRecibido","wb");
-	enviarConfirmacion(SocketFD);
-	enviarMD5SUM(SocketFD);
+	/*enviarConfirmacion(SocketFD);
+	enviarMD5SUM(SocketFD);*/
 	sizeTmp = 153031579;
 	buffTmp = BUFFSIZE;
 
 	int cont = 0;
-	while((recibido = recv(SocketFD, buffer, BUFFSIZE, 0)) > 0){
-		cont = cont + 1;
-		printf("contador packs : %d\n",cont);
-		if(sizeTmp>BUFFSIZE){
-			sizeTmp = sizeTmp-BUFFSIZE;
-			buffTmp = BUFFSIZE;
+	while(recibido < 0){
+		recibido = recv(SocketFD, buffer, BUFFSIZE, 0);
+		if(recibido > 0){		
+			cont = cont + 1;
+			printf("contador packs : %d\n",cont);
+
+			if(sizeTmp>BUFFSIZE){
+				sizeTmp = sizeTmp-BUFFSIZE;
+				buffTmp = BUFFSIZE;
+				
+			} else{
+				// sizeTmp = sizeTmp-BUFFSIZE;
+				buffTmp = sizeTmp;
+			}
+			//printf("%s",buffer);
+			fwrite(buffer,buffTmp,1,file);
+
+			if(send(SocketFD,"ok",80,0) == ERROR)
+				perror("Error al enviar el archivo:");
 			
-		} else{
-			// sizeTmp = sizeTmp-BUFFSIZE;
-			buffTmp = sizeTmp;
+			printf("llego \n");
+			//memset(buffer, 0, BUFFSIZE);
+			recibido = -1;
 		}
-		//printf("%s",buffer);
-		fwrite(buffer,buffTmp,1,file);
-		memset(buffer, 0, BUFFSIZE);
 	}//Termina la recepción del archivo
 
 	fclose(file);
@@ -169,7 +170,7 @@ void enviarConfirmacion(int SocketFD){
 			perror("Error al enviar la confirmación:");
 
 	
-}//End enviarConfirmacion
+}
 
 void enviarMD5SUM(int SocketFD){
 	FILE *tmp;//Apuntador al archivo temporal que guarda el MD5SUM del archivo.

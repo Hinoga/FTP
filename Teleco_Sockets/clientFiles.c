@@ -1,12 +1,3 @@
-/*
-* Author: Pablo Camarillo Ramírez.
-* Fecha/Date: 28 de Septiembre de 2010/September 28th 2010.
-* Redes de Computadora / Computer networks.
-* Description: 	This application contains the client functionality
-* 		to send/receive files through C-like sockets by using
-*		TCP/UDP packages.
-*/
- 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -22,11 +13,8 @@
 
 struct data_struct 
 { 
-	char name[50];
-	char type[5];
 	long int numPacket;
-	int size;
-	char data[1024];
+	char data[BUFFSIZE];
 };
 // ----------------------- Se definen las funciones a usar --------------------------
 char * getName (char* name);
@@ -129,11 +117,15 @@ void sendData(int SocketFD, FILE* archivo){
 	int buffTmp;
 	long int sizeTmp;
 	int cont = 0;
+	char bufferRecive[BUFFSIZE];
+	int recibido = -1;
+	
+	
 	fileSize1 = findSize(archivo);
 	rewind(archivo);
 	printf("Tamano: %d\n",fileSize1);
 	printf("Ubicacion: %d\n",ftell(archivo));
-	sizeTmp = fileSize1;
+	sizeTmp = fileSize1;//153031579;
 	prueba = fileSize1;
 	buffTmp= BUFFSIZE;
 
@@ -145,17 +137,38 @@ void sendData(int SocketFD, FILE* archivo){
 			sizeTmp = sizeTmp-BUFFSIZE;
 			buffTmp = BUFFSIZE;
 			prueba = prueba - buffTmp;
-			printf("Tamano 1: %d\n",prueba);
+			//printf("Tamano 1: %d\n",prueba);
 		} else {
 			//sizeTmp = sizeTmp-BUFFSIZE;
 			buffTmp = sizeTmp;
 			prueba = prueba - buffTmp;
-			printf("Tamano 2: %d\n",prueba);
+			//printf("Tamano 2: %d\n",prueba);
 		}
-		if(send(SocketFD,buffer,buffTmp,0) == ERROR)
-			perror("Error al enviar el archivo:");
 
-		memset(buffer, 0, BUFFSIZE);
+		if(send(SocketFD,buffer,buffTmp,0) == ERROR){
+			perror("Error al enviar el archivo:");
+		}	
+		
+		
+		/*recv(SocketFD, bufferRecive, 3, 1);
+		printf("envio: %s \n",bufferRecive);*/
+		printf("size: %d \n", recibido);
+		while(recibido<0){
+			recibido = read(SocketFD,bufferRecive,80);
+			//printf("size: %d \n", recibido);
+		}
+		recibido = -1;
+		//printf("buffer: %s\n",bufferRecive);
+/*
+		while((recibido = recv(SocketFD, bufferRecive, 2, 1)) > 0){
+			printf("envio: %s \n",bufferRecive);
+			if(strcmp(bufferRecive,"ok")!=0){
+				printf("entro \n");
+			}
+		}*/
+
+		/*memset(bufferRecive, 0, BUFFSIZE);
+		memset(buffer, 0, BUFFSIZE);*/
 		/*if(packetPerFile>0)
 			packetPerFile =packetPerFile+1;
 		*/
