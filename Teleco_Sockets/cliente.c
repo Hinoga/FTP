@@ -8,18 +8,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define ERROR		-1
+
 void err_quit(char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
 
-void xfer_data(int srcfd, int tgtfd)
+/*void xfer_data(int srcfd, int tgtfd)
 {
     char buf[1024];
     int cnt, len;
 
-    /* Leemos desde la entrada fd y escribimos a la salida fd*/
+    //Leemos desde la entrada fd y escribimos a la salida fd
     while((cnt = read(srcfd, buf, sizeof(buf))) > 0)
     {
 	if(len < 0)
@@ -27,7 +29,19 @@ void xfer_data(int srcfd, int tgtfd)
 	if((len=write(tgtfd, buf, cnt)) != cnt)
 	    err_quit("xfer_data:write");
     }
-}
+}*/
+
+void enviarConfirmacion(int SocketFD, char *command){
+	int buffTmp = 20;
+	char comand[15]= "-ls";
+	//int lenMensaje = strlen(command);
+	printf("\nConfirmación enviada\n");
+	if(send(SocketFD,comand,buffTmp,0) == ERROR)
+			perror("Error al enviar el comando\n");
+
+	
+}//End enviarConfirmacion
+
 /*
 Developer: Hinoga
 Description: Funcion que arroja al usuario las posibles opciones
@@ -53,11 +67,11 @@ Parameter: none
 Return: void
 Date: 07/11/2018
 */
-void readCommand(){
+void readCommand(int SocketFD){
 	char command[60];
 	printf("Ingrese el comando: ");
     scanf("%s", command); // comando capturado      
-    commandMenu(command); // se llama la funcion que decide que comando ejecutar
+    commandMenu(command, SocketFD); // se llama la funcion que decide que comando ejecutar
 }
 
 /*void commandDisconnect(){
@@ -114,7 +128,7 @@ Parameter: command
 Return: void
 Date: 07/11/2018
 */
-void commandMenu(char *command) {
+void commandMenu(char *command, int IdSocket) {
 	int band=0;
 	
 	if ((strcmp ("-help", command)==0) || (strcmp ("-h", command)==0)){
@@ -122,7 +136,7 @@ void commandMenu(char *command) {
 		band=1;
 	}
 	else if (strcmp (command,"-ls")==0){
-		printf("GG2");
+		enviarConfirmacion(IdSocket, command);
 		band=1;
 	}
 	else if (strcmp ("-disconnect", command)==0){
@@ -151,7 +165,7 @@ void commandMenu(char *command) {
 	}
 	else if(band == 0){
 		printf("Command not found\n");
-		readCommand();
+		readCommand(IdSocket);
 	}
 }
 
@@ -190,11 +204,11 @@ int main(int argc, char *argv[])
 
 
     /*LECTURA DE COMANDOS*/
-    readCommand(); // Pide al usuario un comando a ingresar
+    readCommand(sockfd); // Pide al usuario un comando a ingresar
 
     /* Copiar la stdin al descriptor de socket*/
     //xfer_data(fileno(stdin), sockfd);
 
-    //exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 
 }
