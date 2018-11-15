@@ -9,38 +9,27 @@
 #include <stdio.h>
 
 #define ERROR		-1
+#define BUFFSIZE 255
 
 void err_quit(char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
 }
-
-/*void xfer_data(int srcfd, int tgtfd)
-{
-    char buf[1024];
-    int cnt, len;
-
-    //Leemos desde la entrada fd y escribimos a la salida fd
-    while((cnt = read(srcfd, buf, sizeof(buf))) > 0)
-    {
-	if(len < 0)
-	    err_quit("xfer_data:read");
-	if((len=write(tgtfd, buf, cnt)) != cnt)
-	    err_quit("xfer_data:write");
-    }
-}*/
-
-void enviarConfirmacion(int SocketFD, char *command){
-	int buffTmp = 20;
-	char comand[15]= "-ls";
-	//int lenMensaje = strlen(command);
-	printf("\nConfirmación enviada\n");
-	if(send(SocketFD,comand,buffTmp,0) == ERROR)
-			perror("Error al enviar el comando\n");
-
-	
-}//End enviarConfirmacion
+/*
+Developer: Danieltoro05
+Description: Función que envía el comando al servidor
+Parameter: SocketFD, command 
+Return: void
+Date: 15/11/2018
+*/
+void sendCommand(int SocketFD, char *command){
+	int buffTmp = 20; //se define un buff temporal
+	char buffer[BUFFSIZE]; //se define buffer con un BUFFSIZE definido globalmente
+	printf("Comando enviado\n");
+	if(send(SocketFD,command,buffTmp,0) == ERROR)// Se envía el comando al servidor
+			perror("Error al enviar el comando\n");	
+}
 
 /*
 Developer: Hinoga
@@ -74,77 +63,75 @@ void readCommand(int SocketFD){
     commandMenu(command, SocketFD); // se llama la funcion que decide que comando ejecutar
 }
 
-/*void commandDisconnect(){
-	int val=1;
-	close(sockfd);
-	printf("CHAO");
-		return val;
-}
+/*
+Developer: Brayan Tabares, Daniela Ortiz, Andrés García.
+Description: Esta función se encarga de desconectar el socket.
+version: 0.3
+Parameter: none
+Return: none
+Date: 15/11/2018
 */
-void commandExit(){
-	int val=0;
-	//commandDisconnect(val);
-	//if(val==1){
-	printf("CHAO-bambino");
-		exit(EXIT_SUCCESS);
-}
+
+void commandDisconnect(int IdSocket){ // esta es la función de desconectar, retorna un entero.
+	close(IdSocket); //cierra el socket.
+	printf("User disconnected\n");
+    //int val=1; // se crea una variable entera y se le asigna el número 1.
+    //return val; // retorna el valor que tenga val.
+    
+       
+    //nota: se puede emplear shutdown, para cerrar el socket.
+ }
 
 /*
-Developer: Danieltoro05 - Paulaamaya0121
-Description: Funcion que autentica el usuario
+Developer: Brayan Tabares, Daniela Ortiz, Andrés García.
+Description: Esta función se encarga de cerrar el terminar del ftp.
+version: 0.3
 Parameter: none
-Return: void
-Date: 09/11/2018
+Return: none
+Date: 15/11/2018
 */
 
-void commandUser()
-{
-	char user [10] = "daniel"; // Se predefine un usuario
-	char password [5] = "1234";// Se predefine una contraseña
-	printf("Type user: "); 
-	char usuario[10]; // Se declara el arreglo para almacenar el usuario
-	scanf("%s",& usuario);
-	if(strcmp(usuario,user)==0){ // Se compara el usuario ingresado con el usuario predefinido
-		printf("Please type the password: "); 
-		char contrasena[10]; // Se declara el arreglo para almacenar la contraseña
-		scanf("%s",& contrasena); // Si el usuario es correcto, pide la contraseña
-		if(strcmp(contrasena,password)==0){ // Se compara la contraseña con la contraseña predefinida
-			printf("User connected %s\n",user);
-		}
-		else {
-			printf("Incorrect Password\n"); 
-			commandUser(); // Si la contraseña no es correcta se llama la función nuevamente para leer el usuario
-		}
-	}
-	else{
-	printf("Incorrect User\n");
-	commandUser(); // Si el usuario no es correcto se llama la función nuevamente para leer el usuario
-	}
+void commandExit(int IdSocket){// esta es la función de salidad, no retorna nada.
+	close(IdSocket); //cierra el socket
+	
+	exit(EXIT_SUCCESS); //cierra la interfaz
 }
+
 /*
 Developer: DanielToro05 - Hinoga
-Description: Menu para ejecutar el comando propuesto
+Description: Menú para ejecutar el comando propuesto
 Parameter: command
 Return: void
 Date: 07/11/2018
 */
-void commandMenu(char *command, int IdSocket) {
+
+void commandMenu(char *command, int IdSocket) { //función que llama las funciones dependiendo del comando escrito por el cliente
 	int band=0;
+	int recibido = -1;
+	char buffer[255];
 	
 	if ((strcmp ("-help", command)==0) || (strcmp ("-h", command)==0)){
 		commandHelp();
 		band=1;
 	}
 	else if (strcmp (command,"-ls")==0){
-		enviarConfirmacion(IdSocket, command);
+		sendCommand(IdSocket, command);
+		readCommand(IdSocket);
+		/*while(recibido < 0){
+			recibido = recv(IdSocket, buffer, BUFFSIZE, 0);
+			printf("%s\n", buffer);
+			recibido =0;
+		}
+		recibido = -1;*/
 		band=1;
 	}
 	else if (strcmp ("-disconnect", command)==0){
-		//commandDisconnect();
+		commandDisconnect(IdSocket);
+		readCommand(IdSocket);
 		band=1;
 	}
 	else if (strcmp ("-exit", command)==0){
-		commandExit();
+		commandExit(IdSocket);
 		band=1;
 	}
 	else if (strcmp ("-connect", command)==0){
@@ -152,7 +139,22 @@ void commandMenu(char *command, int IdSocket) {
 		band=1;
 	}
 	else if (strcmp ("-user", command)==0){
-		commandUser();
+		char buffTmp[15];
+		sendCommand(IdSocket, command);
+		while(recibido < 0){
+			recibido = recv(IdSocket, buffer, BUFFSIZE, 0);
+			printf("%s", buffer);
+		}
+		recibido = -1;
+		char usuario[10]; // Se declara el arreglo para almacenar el usuario
+		scanf("%s",& usuario);
+		sendCommand(IdSocket, usuario);
+		if(recibido < 0){
+			recibido = recv(IdSocket, buffer, BUFFSIZE, 0);
+			printf("%s\n", buffer);
+		}
+		readCommand(IdSocket);
+		//commandUser();
 		band=1;
 	}
 	else if (strcmp ("-get", command)==0){
