@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define BUFFSIZE 1024
+#define BUFFSIZE 4096
 #define	ERROR	-1
 #define	PUERTO	1100
 
@@ -16,10 +16,18 @@ struct data_struct
 	long int numPacket;
 	char data[BUFFSIZE];
 };
+
 // ----------------------- Se definen las funciones a usar --------------------------
 char * getName (char* name);
 long int findSize(FILE* fp);
 void sendData(int SocketFD, FILE* archivo);
+void err_quit(char *msg);
+void enviarConfirmacion(int SocketFD, char *command);
+void commandHelp();
+void readCommand(int SocketFD);
+void commandExit();
+void commandUser();
+void commandMenu(char *command, int IdSocket);
 
 // ------------------------ Main del algoritmo ---------------------------------------
 int main(int argc, char *argv[]){
@@ -120,7 +128,6 @@ void sendData(int SocketFD, FILE* archivo){
 	char bufferRecive[BUFFSIZE];
 	int recibido = -1;
 	
-	
 	fileSize1 = findSize(archivo);
 	rewind(archivo);
 	printf("Tamano: %d\n",fileSize1);
@@ -128,6 +135,15 @@ void sendData(int SocketFD, FILE* archivo){
 	sizeTmp = fileSize1;//153031579;
 	prueba = fileSize1;
 	buffTmp= BUFFSIZE;
+
+
+	while(recibido<0){
+			recibido = read(SocketFD,bufferRecive,80);
+	}
+
+	/*if(strcmp("ok",bufferRecive)==0){
+
+	}*/
 
 	while(!feof(archivo)){
 		cont = cont +1;

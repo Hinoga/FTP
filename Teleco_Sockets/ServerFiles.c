@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 /*Definición de constantes*/
-#define BUFFSIZE 1024
+#define BUFFSIZE 4096
 #define PUERTO		1100
 #define ERROR		-1
 
@@ -122,20 +122,28 @@ void recibirArchivo(int SocketFD, FILE *file){
 	int buffTmp;
 	long int sizeTmp;
 	int recibido = -1;
-
+	char nameFile[80];
+	FILE *params;
+	params = fopen("params","r");
+	fscanf(params,"%s %li",nameFile, &sizeTmp);
+	printf("abrio: %s %li \n",nameFile, sizeTmp);
+	fclose(params);
 	/*Se abre el archivo para escritura*/
-	file = fopen("archivoRecibido","wb");
+	file = fopen(nameFile,"wb");
 	/*enviarConfirmacion(SocketFD);
 	enviarMD5SUM(SocketFD);*/
-	sizeTmp = 153031579;
 	buffTmp = BUFFSIZE;
+	
+	
+	if(send(SocketFD,"ok",80,0) == ERROR)
+				perror("Error al enviar el archivo:");
 
 	int cont = 0;
 	while(recibido < 0){
 		recibido = recv(SocketFD, buffer, BUFFSIZE, 0);
 		if(recibido > 0){		
 			cont = cont + 1;
-			printf("contador packs : %d\n",cont);
+			//printf("contador packs : %d\n",cont);
 
 			if(sizeTmp>BUFFSIZE){
 				sizeTmp = sizeTmp-BUFFSIZE;
@@ -151,7 +159,7 @@ void recibirArchivo(int SocketFD, FILE *file){
 			if(send(SocketFD,"ok",80,0) == ERROR)
 				perror("Error al enviar el archivo:");
 			
-			printf("llego \n");
+			//printf("llego \n");
 			//memset(buffer, 0, BUFFSIZE);
 			recibido = -1;
 		}
@@ -212,4 +220,14 @@ void getIP(int tipo, char * IP){
 		j++;		
 	}
 }//End getIP
+
+/*void escribirArchivo(){
+	FILE *params;
+	long int fileSize1;
+	fileSize1 = findSize(archivo);
+	params = fopen ("params", "w+");
+	name = getName(dir);
+   	fputs(("%s %li", name,fileSize1), params);
+	fclose(params);
+}*/
 
