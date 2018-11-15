@@ -11,6 +11,7 @@
 #define ERROR		-1
 #define BUFFSIZE 255
 
+	int IDSOCKET =-1;
 void err_quit(char *msg)
 {
     perror(msg);
@@ -56,11 +57,11 @@ Parameter: none
 Return: void
 Date: 07/11/2018
 */
-void readCommand(int SocketFD){
+void readCommand(){
 	char command[60];
 	printf("Ingrese el comando: ");
     scanf("%s", command); // comando capturado      
-    commandMenu(command, SocketFD); // se llama la funcion que decide que comando ejecutar
+    commandMenu(command, IDSOCKET); // se llama la funcion que decide que comando ejecutar
 }
 
 /*
@@ -72,8 +73,8 @@ Return: none
 Date: 15/11/2018
 */
 
-void commandDisconnect(int IdSocket){ // esta es la función de desconectar, retorna un entero.
-	close(IdSocket); //cierra el socket.
+void commandDisconnect(int IDSOCKET){ // esta es la función de desconectar, retorna un entero.
+	close(IDSOCKET); //cierra el socket.
 	printf("User disconnected\n");
     //int val=1; // se crea una variable entera y se le asigna el número 1.
     //return val; // retorna el valor que tenga val.
@@ -91,8 +92,8 @@ Return: none
 Date: 15/11/2018
 */
 
-void commandExit(int IdSocket){// esta es la función de salidad, no retorna nada.
-	close(IdSocket); //cierra el socket
+void commandExit(int IDSOCKET){// esta es la función de salidad, no retorna nada.
+	close(IDSOCKET); //cierra el socket
 	
 	exit(EXIT_SUCCESS); //cierra la interfaz
 }
@@ -105,7 +106,7 @@ Return: void
 Date: 07/11/2018
 */
 
-void commandMenu(char *command, int IdSocket) { //función que llama las funciones dependiendo del comando escrito por el cliente
+void commandMenu(char *command, int IDSOCKET, char *argv[]) { //función que llama las funciones dependiendo del comando escrito por el cliente
 	int band=0;
 	int recibido = -1;
 	char buffer[255];
@@ -115,8 +116,8 @@ void commandMenu(char *command, int IdSocket) { //función que llama las funcion
 		band=1;
 	}
 	else if (strcmp (command,"-ls")==0){
-		sendCommand(IdSocket, command);
-		readCommand(IdSocket);
+		sendCommand(IDSOCKET, command);
+		readCommand();
 		/*while(recibido < 0){
 			recibido = recv(IdSocket, buffer, BUFFSIZE, 0);
 			printf("%s\n", buffer);
@@ -126,34 +127,73 @@ void commandMenu(char *command, int IdSocket) { //función que llama las funcion
 		band=1;
 	}
 	else if (strcmp ("-disconnect", command)==0){
-		commandDisconnect(IdSocket);
-		readCommand(IdSocket);
+		
+		commandDisconnect(IDSOCKET);
+		readCommand(IDSOCKET);
+		
 		band=1;
 	}
 	else if (strcmp ("-exit", command)==0){
-		commandExit(IdSocket);
+		commandExit(IDSOCKET);
 		band=1;
 	}
 	else if (strcmp ("-connect", command)==0){
-		printf("GG5");
+		
+		int sockfd;
+		struct sockaddr_in cli;
+		socklen_t socklen;
+		char argc[10];
+		printf("Direccion IP:");
+		scanf("%s",argc);
+		
+		/* Esperar la dirección IP en la linea de comando */
+		if(argc == "")
+		{
+		puts("ERROR: cliente <direccion IP>");
+		exit(EXIT_FAILURE);
+		}
+
+		/* Creacion del socket */
+		if((sockfd = socket(PF_INET, SOCK_STREAM, 0)) < 0)
+		err_quit("socket");
+
+		/* Configuracion del cliente */
+		memset(&cli, 0, sizeof(cli));
+		cli.sin_family = AF_INET;
+		cli.sin_port = htons(50000);
+		/* Destruir socket cuando la IP es invalida*/
+		if(!(inet_aton(argc, &cli.sin_addr)))
+		err_quit("inet_aton");
+
+		/*Conectarse al socket*/
+		socklen = sizeof(cli);
+		if(connect(sockfd, (struct sockaddr *)&cli, socklen))
+			err_quit("coexion");
+		puts("conectado al servidor");
+		printf("\t Puerto: %d\n",ntohs(cli.sin_port));
+		printf("\tDirección: %s\n",inet_ntoa(cli.sin_addr));
+		
+		IDSOCKET=sockfd;
+		readCommand();
+		
 		band=1;
 	}
 	else if (strcmp ("-user", command)==0){
 		char buffTmp[15];
-		sendCommand(IdSocket, command);
+		sendCommand(IDSOCKET, command);
 		while(recibido < 0){
-			recibido = recv(IdSocket, buffer, BUFFSIZE, 0);
+			recibido = recv(IDSOCKET, buffer, BUFFSIZE, 0);
 			printf("%s", buffer);
 		}
 		recibido = -1;
 		char usuario[10]; // Se declara el arreglo para almacenar el usuario
 		scanf("%s",& usuario);
-		sendCommand(IdSocket, usuario);
+		sendCommand(IDSOCKET, usuario);
 		if(recibido < 0){
-			recibido = recv(IdSocket, buffer, BUFFSIZE, 0);
+			recibido = recv(IDSOCKET, buffer, BUFFSIZE, 0);
 			printf("%s\n", buffer);
 		}
-		readCommand(IdSocket);
+		readCommand(IDSOCKET);
 		//commandUser();
 		band=1;
 	}
@@ -167,50 +207,18 @@ void commandMenu(char *command, int IdSocket) { //función que llama las funcion
 	}
 	else if(band == 0){
 		printf("Command not found\n");
-		readCommand(IdSocket);
+		readCommand(IDSOCKET);
 	}
 }
 
-int main(int argc, char *argv[])
+int main()
 {
-    int sockfd;
-    struct sockaddr_in cli;
-    socklen_t socklen;
-
-    /* Esperar la dirección IP en la linea de comando */
-    if(argc != 2)
-    {
-	puts("ERROR: cliente <direccion IP>");
-	exit(EXIT_FAILURE);
-    }
-
-    /* Creacion del socket */
-    if((sockfd = socket(PF_INET, SOCK_STREAM, 0)) < 0)
-	err_quit("socket");
-
-    /* Configuracion del cliente */
-    memset(&cli, 0, sizeof(cli));
-    cli.sin_family = AF_INET;
-    cli.sin_port = htons(50000);
-    /* Destruir socket cuando la IP es invalida*/
-    if(!(inet_aton(argv[1], &cli.sin_addr)))
-	err_quit("inet_aton");
-
-    /*Conectarse al socket*/
-    socklen = sizeof(cli);
-    if(connect(sockfd, (struct sockaddr *)&cli, socklen))
-        err_quit("coexion");
-    puts("conectado al servidor");
-    printf("\t Puerto: %d\n",ntohs(cli.sin_port));
-    printf("\tDirección: %s\n",inet_ntoa(cli.sin_addr));
-
-
+    
     /*LECTURA DE COMANDOS*/
-    readCommand(sockfd); // Pide al usuario un comando a ingresar
+    readCommand(); // Pide al usuario un comando a ingresar
 
     /* Copiar la stdin al descriptor de socket*/
     //xfer_data(fileno(stdin), sockfd);
 
     exit(EXIT_SUCCESS);
-
 }
