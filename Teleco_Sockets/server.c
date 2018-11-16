@@ -22,7 +22,7 @@ void err_quit(char *msg)
 
 
 /*
-Developer: DanielToro05 - Hinoga
+Developer: DanielToro05 - Hinoga - LuisBenitez
 Description: Funcion que realiza la logica de los comandos
 Parameter: char *command, int srcfd, int cnt
 Return: void

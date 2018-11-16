@@ -12,7 +12,7 @@
 #define BUFFSIZE 255
 
 int bandera = 0;   //Variable que se le asigna al connect para saber si está conectado o no.
-int autenticacion = 0; //Variable que se le asigna si el usuario ya inicio seccion.
+int autenticacion = 0; //Variable que se le asigna si el usuario ya inicio sesion.
 	
 void err_quit(char *msg)
 {
@@ -37,7 +37,7 @@ void sendCommand(int sockfd, char *command){
 }
 
 /*
-Developer: Hinoga
+Developer: Hinoga - LuisBenitez
 Description: Funcion que arroja al usuario las posibles opciones
 Parameter: none
 Return: void
@@ -55,7 +55,7 @@ void commandHelp(int sockfd){
 }
 
 /*
-Developer: DanielToro05 - Hinoga
+Developer: DanielToro05 - Hinoga - LuisBenitez
 Description: Funcion para pedir el comando al usuario
 Parameter: none
 Return: void
@@ -103,7 +103,7 @@ void commandExit(int sockfd){// esta es la función de salidad, no retorna nada.
 }
 
 /*
-Developer: DanielToro05 - Hinoga
+Developer: DanielToro05 - Hinoga - LuisBenitez
 Description: Menú para ejecutar el comando propuesto
 Parameter: command
 Return: void
