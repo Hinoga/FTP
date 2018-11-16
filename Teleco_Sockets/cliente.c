@@ -29,9 +29,11 @@ Date: 15/11/2018
 void sendCommand(int sockfd, char *command){
 	int buffTmp = 20; //se define un buff temporal
 	char buffer[BUFFSIZE]; //se define buffer con un BUFFSIZE definido globalmente
-	printf("Comando enviado\n");
+	
 	if(send(sockfd,command,buffTmp,0) == ERROR)// Se envía el comando al servidor
-			perror("Error al enviar el comando\n");	
+			perror("Error al enviar el comando\n");
+			
+	printf("Comando enviado\n");
 }
 
 /*
@@ -118,13 +120,13 @@ void commandMenu(char *command, int sockfd, char *argv[]) { //función que llama
 		band=1;
 	}
 	else if (strcmp (command,"-ls")==0){
-		if(bandera != 0)
+		if(bandera != 0 && autenticacion !=0)
 		{
 			sendCommand(sockfd, command);
 			readCommand(sockfd);
 		}else
 		{
-			printf("No se ha conectado el Usuario\n");
+			printf("User has not connected or logged \n");
 			readCommand(sockfd);
 		}
 		
@@ -144,7 +146,7 @@ void commandMenu(char *command, int sockfd, char *argv[]) { //función que llama
 			readCommand(sockfd);
 		}else
 		{
-			printf("No se ha conectado el Usuario\n");
+			printf("User has not connected\n");
 			readCommand(sockfd);
 		}
 		band=1;
@@ -218,21 +220,38 @@ Date: 15/11/2018
 				recibido = recv(sockfd, buffer, BUFFSIZE, 0);
 				printf("%s\n", buffer);
 			}
+			autenticacion = 1;
 			readCommand(sockfd);
 		}else
 		{
-			printf("No se ha conectado el Usuario\n");
+			printf("User has not connected\n");
 			readCommand(sockfd);
 		}
 		
 		band=1;
 	}
 	else if (strcmp ("-get", command)==0){
-		printf("GG7");
+		
+		if(bandera != 0 && autenticacion !=0)
+		{
+			
+		}else
+		{
+			printf("User has not connected or logged \n");
+			readCommand(sockfd);
+		}
 		band=1;
 	}
 	else if (strcmp ("-send", command)==0){
-		printf("GG8");
+		
+		if(bandera != 0 && autenticacion !=0)
+		{
+			
+		}else
+		{
+			printf("User has not connected or logged \n");
+			readCommand(sockfd);
+		}
 		band=1;
 	}
 	else if(band == 0){
